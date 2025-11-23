@@ -1,0 +1,12 @@
+# worker-2 전용 관리 NIC 지정
+network_interface: enp1s0
+neutron_external_interface: enp1s0
+tunnel_interface: enp1s0
+api_interface: enp1s0
+storage_interface: enp1s0
+cluster_interface: enp1s0
+swift_storage_interface: enp1s0
+swift_replication_interface: enp1s0
+migration_interface: enp1s0
+dns_interface: enp1s0
+octavia_network_interface: enp1s0

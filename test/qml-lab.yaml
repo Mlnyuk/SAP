@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-lab
+  labels:
+    app: quantum-lab
+spec:
+  replicas: 1 # 파드 1개 실행
+  selector:
+    matchLabels:
+      app: quantum-lab
+  template:
+    metadata:
+      labels:
+        app: quantum-lab
+    spec:
+      containers:
+      - name: jupyter
+        # NVIDIA 최적화 PyTorch 이미지 (CUDA 포함됨)
+        image: nvcr.io/nvidia/pytorch:23.10-py3
+        command: ["/bin/bash", "-c"]
+        # 1. PennyLane 설치 -> 2. 주피터 랩 실행 (토큰: quantum)
+        args:
+          - |
+            pip install pennylane matplotlib &&
+            jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='quantum'
+        ports:
+        - containerPort: 8888
+        resources:
+          limits:
+            nvidia.com/gpu: 1 # 핵심: V100 GPU 1장 할당 요청
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-lab-svc
+spec:
+  selector:
+    app: quantum-lab
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8888
+  type: NodePort # 외부 접속을 위해 노드 포트 개방
